@@ -1,0 +1,810 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Namaji Subhan — Portfolio</title>
+<style>
+  /* =========================
+     Theme variables
+     ========================= */
+  :root{
+    --bg:#000;                 /* deep black */
+    --ghost-red:#ff1a1a;       /* primary ghost red */
+    --ghost-deep:#660000;      /* deep red accent */
+    --muted:#bfbfbf;
+    --glass: rgba(255,255,255,0.03);
+    --card: rgba(255,255,255,0.02);
+    --accent-glow: 0 0 18px rgba(255,26,26,0.18), 0 0 40px rgba(255,26,26,0.08);
+    --ease: cubic-bezier(.2,.9,.2,1);
+  }
+
+  /* =========================
+     Base layout
+     ========================= */
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background:var(--bg);
+    color:#eee;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    overflow-x:hidden;
+  }
+
+  /* full-screen canvas for particles */
+  canvas#bgCanvas{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    display:block;
+  }
+
+  /* container */
+  .wrap{
+    position:relative;
+    z-index:5;
+    max-width:1200px;
+    margin:0 auto;
+    padding:40px 24px;
+  }
+
+  /* =========================
+     Splash / Intro
+     ========================= */
+  #splash{
+    position:fixed;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(180deg, rgba(0,0,0,0.95), rgba(0,0,0,0.85));
+    z-index:9999;
+    pointer-events:none;
+  }
+  .splash-inner{
+    text-align:center;
+    transform:translateY(0);
+    animation: splashIn 1.2s var(--ease) forwards;
+  }
+  .name{
+    font-size:clamp(36px,7vw,84px);
+    letter-spacing:0.06em;
+    color:var(--ghost-red);
+    font-weight:800;
+    text-transform:uppercase;
+    line-height:0.9;
+    text-shadow: 0 0 12px rgba(255,26,26,0.18), 0 0 40px rgba(255,26,26,0.08);
+    filter:drop-shadow(0 6px 18px rgba(0,0,0,0.6));
+    transform:translateY(0);
+  }
+  .subtitle{
+    margin-top:12px;
+    color:var(--muted);
+    font-weight:600;
+    letter-spacing:0.02em;
+    opacity:0.9;
+    transform:translateY(6px);
+  }
+  /* subtle glitch effect */
+  .name::after{
+    content:attr(data-text);
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+    mix-blend-mode:screen;
+    color:#ff6b6b;
+    clip-path:polygon(0 0,100% 0,100% 45%,0 55%);
+    opacity:0.12;
+    animation: glitch 2.8s infinite;
+  }
+  @keyframes glitch{
+    0%{transform:translate(-2px,-1px)}
+    20%{transform:translate(2px,1px)}
+    40%{transform:translate(-1px,2px)}
+    60%{transform:translate(1px,-2px)}
+    80%{transform:translate(-2px,1px)}
+    100%{transform:translate(0,0)}
+  }
+  @keyframes splashIn{
+    from{opacity:0; transform:translateY(10px) scale(.98)}
+    to{opacity:1; transform:translateY(0) scale(1)}
+  }
+
+  /* hide splash after animation */
+  .splash-hidden{animation: splashOut 0.9s var(--ease) forwards}
+  @keyframes splashOut{
+    to{opacity:0; transform:translateY(-20px) scale(.98); visibility:hidden}
+  }
+
+  /* =========================
+     Header / Nav
+     ========================= */
+  header{
+    position:fixed;
+    top:18px;
+    left:24px;
+    right:24px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    z-index:10;
+    pointer-events:auto;
+  }
+  .brand{
+    display:flex;
+    gap:12px;
+    align-items:center;
+  }
+  .logo{
+    width:48px;height:48px;border-radius:10px;
+    background:linear-gradient(135deg,var(--ghost-red),var(--ghost-deep));
+    box-shadow:var(--accent-glow);
+    display:flex;align-items:center;justify-content:center;font-weight:800;color:#111;
+    font-size:18px;
+    transform:rotate(-8deg);
+  }
+  nav a{
+    color:var(--muted);
+    margin-left:18px;
+    text-decoration:none;
+    font-weight:600;
+    transition:all .25s var(--ease);
+    position:relative;
+  }
+  nav a:hover{color:var(--ghost-red); transform:translateY(-3px)}
+  nav a::after{
+    content:""; position:absolute; left:0; right:0; bottom:-8px; height:2px; background:transparent;
+    transition:all .25s var(--ease);
+  }
+  nav a:hover::after{background:linear-gradient(90deg,var(--ghost-red),var(--ghost-deep)); height:3px; bottom:-10px}
+
+  /* =========================
+     Hero / Landing section
+     ========================= */
+  .hero{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding-top:80px;
+    padding-bottom:80px;
+    position:relative;
+  }
+  .hero-card{
+    width:100%;
+    max-width:980px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:18px;
+    padding:48px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.7);
+    border:1px solid rgba(255,26,26,0.06);
+    backdrop-filter: blur(6px);
+    position:relative;
+    overflow:hidden;
+  }
+  .hero-left{ text-align:left; padding-right:24px; }
+  .hero h1{
+    margin:0;
+    font-size:clamp(28px,4.6vw,48px);
+    color:#fff;
+    letter-spacing:0.02em;
+  }
+  .hero p.lead{
+    color:var(--muted);
+    margin-top:12px;
+    font-size:1.05rem;
+  }
+  .cta-row{ margin-top:22px; display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+  .btn{
+    background:linear-gradient(90deg,var(--ghost-red),var(--ghost-deep));
+    color:#111;
+    padding:12px 18px;
+    border-radius:10px;
+    font-weight:700;
+    text-decoration:none;
+    box-shadow:var(--accent-glow);
+    border:1px solid rgba(255,255,255,0.03);
+    transition:transform .18s var(--ease), filter .18s var(--ease);
+  }
+  .btn.secondary{
+    background:transparent;
+    color:var(--muted);
+    border:1px solid rgba(255,255,255,0.04);
+    box-shadow:none;
+  }
+  .btn:hover{ transform:translateY(-6px) scale(1.02) }
+
+  /* animated neon line */
+  .neon-line{
+    height:2px; width:100%; margin-top:28px; background:linear-gradient(90deg, transparent, rgba(255,26,26,0.18), transparent);
+    filter:blur(6px);
+    animation: slideGlow 3s linear infinite;
+  }
+  @keyframes slideGlow{
+    0%{background-position:0%}
+    100%{background-position:200%}
+  }
+
+  /* =========================
+     About section - timeline style
+     ========================= */
+  .about{
+    display:grid;
+    grid-template-columns: 1fr 420px;
+    gap:28px;
+    align-items:start;
+  }
+  .bio{
+    background:var(--card);
+    padding:22px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,0.02);
+  }
+  .timeline{
+    background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));
+    padding:18px;
+    border-radius:12px;
+    border-left:4px solid rgba(255,26,26,0.06);
+  }
+  .timeline .item{
+    display:flex; gap:12px; margin-bottom:18px; align-items:flex-start;
+  }
+  .timeline .dot{
+    width:12px; height:12px; border-radius:50%;
+    background:linear-gradient(90deg,var(--ghost-red),var(--ghost-deep));
+    box-shadow:0 0 12px rgba(255,26,26,0.12);
+    margin-top:6px;
+    flex-shrink:0;
+  }
+  .timeline h4{ margin:0; color:#fff; font-size:1rem }
+  .timeline p{ margin:6px 0 0; color:var(--muted); font-size:0.95rem }
+
+  /* =========================
+     Skills - radial meters
+     ========================= */
+  .skills-grid{
+    display:flex; gap:18px; flex-wrap:wrap; justify-content:center; margin-top:18px;
+  }
+  .radial{
+    width:140px; height:140px; border-radius:12px; background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));
+    display:flex; align-items:center; justify-content:center; position:relative; border:1px solid rgba(255,255,255,0.02);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+  }
+  .radial svg{ transform:rotate(-90deg); width:110px; height:110px; }
+  .radial .label{ position:absolute; text-align:center; color:#fff; font-weight:700; font-size:0.95rem }
+  .radial small{ display:block; color:var(--muted); font-weight:600; font-size:0.75rem; margin-top:6px }
+
+  /* =========================
+     Projects - 3D carousel
+     ========================= */
+  .projects-wrap{ perspective:1400px; padding:28px 0; }
+  .carousel{
+    width:100%; height:320px; position:relative; display:flex; align-items:center; justify-content:center;
+  }
+  .card3d{
+    width:320px; height:220px; border-radius:14px; position:absolute; left:50%; top:50%; transform-style:preserve-3d;
+    transform-origin:center center; transition:transform .9s var(--ease), opacity .6s var(--ease);
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border:1px solid rgba(255,255,255,0.03);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+    display:flex; flex-direction:column; gap:10px; padding:18px;
+  }
+  .card3d .title{ color:var(--ghost-red); font-weight:800; font-size:1.05rem }
+  .card3d .desc{ color:var(--muted); font-size:0.95rem }
+  .carousel-controls{ margin-top:18px; display:flex; gap:12px; justify-content:center; }
+  .dot-btn{ width:12px; height:12px; border-radius:50%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.02); cursor:pointer }
+  .dot-btn.active{ background:linear-gradient(90deg,var(--ghost-red),var(--ghost-deep)); box-shadow:var(--accent-glow) }
+
+  /* =========================
+     Certificates slider
+     ========================= */
+  .certs{ display:flex; gap:12px; align-items:center; justify-content:center; overflow:hidden; padding:12px 0; }
+  .cert{ min-width:260px; height:140px; border-radius:12px; background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.02); padding:12px; display:flex; flex-direction:column; justify-content:center; align-items:flex-start; box-shadow:0 12px 40px rgba(0,0,0,0.6) }
+  .cert h5{ margin:0; color:var(--ghost-red) }
+  .cert p{ margin:6px 0 0; color:var(--muted); font-size:0.9rem }
+
+  /* =========================
+     Contact form - floating labels
+     ========================= */
+  .contact-card{ max-width:720px; margin:0 auto; padding:22px; border-radius:12px; background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02)); border:1px solid rgba(255,255,255,0.02) }
+  .field{ position:relative; margin:12px 0; }
+  .field input, .field textarea{
+    width:100%; padding:14px 14px; border-radius:10px; background:transparent; border:1px solid rgba(255,255,255,0.04); color:#fff; outline:none;
+  }
+  .field label{
+    position:absolute; left:14px; top:12px; color:var(--muted); font-size:0.9rem; pointer-events:none; transition:all .18s var(--ease);
+  }
+  .field input:focus + label, .field input:not(:placeholder-shown) + label,
+  .field textarea:focus + label, .field textarea:not(:placeholder-shown) + label{
+    transform:translateY(-22px) scale(.92); color:var(--ghost-red);
+  }
+  .submit{
+    margin-top:12px; display:inline-block; padding:12px 18px; border-radius:10px; background:linear-gradient(90deg,var(--ghost-red),var(--ghost-deep)); color:#111; font-weight:800; border:none; cursor:pointer;
+    box-shadow:var(--accent-glow);
+  }
+
+  /* =========================
+     Footer
+     ========================= */
+  footer{ text-align:center; color:var(--muted); padding:40px 0 80px; }
+
+  /* =========================
+     Responsive tweaks
+     ========================= */
+  @media (max-width:980px){
+    .about{ grid-template-columns: 1fr; }
+    .hero-left{ text-align:center; padding:0 }
+    .hero-card{ padding:28px }
+    .radial{ width:120px; height:120px }
+  }
+</style>
+</head>
+<body>
+
+<!-- Background canvas for particles -->
+<canvas id="bgCanvas"></canvas>
+
+<!-- Splash -->
+<div id="splash" aria-hidden="true">
+  <div class="splash-inner">
+    <div style="position:relative; display:inline-block;">
+      <div class="name" data-text="Namaji Subhan">Namaji Subhan</div>
+    </div>
+    <div class="subtitle">Computer Science Graduate — AI & Web Development</div>
+  </div>
+</div>
+
+<!-- Header -->
+<header class="wrap">
+  <div class="brand">
+    <div class="logo">NS</div>
+    <div style="line-height:1">
+      <div style="font-weight:800;color:#fff">Namaji Subhan</div>
+      <div style="font-size:12px;color:var(--muted)">B.Tech CSE • AI & Web Dev</div>
+    </div>
+  </div>
+  <nav>
+    <a href="#hero">Home</a>
+    <a href="#about">About</a>
+    <a href="#skills">Skills</a>
+    <a href="#projects">Projects</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<!-- Main content -->
+<main class="wrap" id="main">
+
+  <!-- HERO -->
+  <section id="hero" class="hero" aria-label="Hero">
+    <div class="hero-card" role="region" aria-labelledby="hero-title">
+      <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;">
+        <div class="hero-left" style="flex:1;min-width:260px">
+          <h1 id="hero-title">I build intelligent web experiences and ML prototypes</h1>
+          <p class="lead">I am a Computer Science graduate skilled in Python, Java, HTML, CSS and SQL. I combine AI research ideas with polished front-end experiences to ship usable projects.</p>
+          <div class="cta-row">
+            <a class="btn" href="#projects">View Projects</a>
+            <a class="btn secondary" href="#contact">Hire / Contact</a>
+          </div>
+          <div class="neon-line" aria-hidden="true"></div>
+        </div>
+
+        <!-- small profile card -->
+        <div style="width:320px; min-width:240px;">
+          <div style="padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.02);">
+            <div style="display:flex;gap:12px;align-items:center">
+              <div style="width:72px;height:72px;border-radius:12px;background:linear-gradient(135deg,var(--ghost-red),var(--ghost-deep)); display:flex;align-items:center;justify-content:center;font-weight:800;color:#111">NS</div>
+              <div>
+                <div style="font-weight:800">Namaji Subhan</div>
+                <div style="color:var(--muted);font-size:13px">B.Tech CSE • AI & Web Dev</div>
+              </div>
+            </div>
+            <div style="margin-top:12px;color:var(--muted);font-size:14px">Respiratory Disease Classification using Cough Sounds — CNN + MFCC + Tkinter GUI (85%+ accuracy)</div>
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <a class="btn" href="#projects" style="padding:8px 12px;font-size:13px">Project</a>
+              <a class="btn secondary" href="#" style="padding:8px 12px;font-size:13px">Resume</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" aria-label="About">
+    <div style="display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;">
+      <div style="flex:1;min-width:320px;">
+        <div class="bio">
+          <h2 style="color:var(--ghost-red);margin:0 0 8px 0">About Me</h2>
+          <p style="color:var(--muted);margin:0 0 12px 0">Computer Science graduate with hands-on experience in machine learning and full-stack development. I enjoy turning data into features and ideas into interactive web apps.</p>
+          <ul style="color:var(--muted);margin:12px 0 0 18px">
+            <li>Languages: Python, Java, HTML, CSS</li>
+            <li>Databases: SQL</li>
+            <li>Tools: Jupyter, VS Code, Eclipse</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="width:420px;min-width:280px;">
+        <div class="timeline" aria-hidden="false">
+          <div class="item"><div class="dot"></div><div><h4>Gates Institute of Technology — B.Tech (2021-2025)</h4><p>70.13% — CSE, GOOTY</p></div></div>
+          <div class="item"><div class="dot"></div><div><h4>Respiratory Disease Classification</h4><p>Built a CNN using MFCC features; desktop GUI with Tkinter; 85%+ accuracy.</p></div></div>
+          <div class="item"><div class="dot"></div><div><h4>Certifications</h4><p>Cloud Computing (NPTEL), Python Fullstack (Codeworks)</p></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills" aria-label="Skills">
+    <h2 style="margin-bottom:8px">Skills</h2>
+    <div style="color:var(--muted);margin-bottom:18px">Radial meters show proficiency; hover to animate details.</div>
+    <div class="skills-grid" role="list">
+      <!-- radial meter template -->
+      <div class="radial" data-level="85" title="Python 85%">
+        <svg viewBox="0 0 36 36">
+          <path d="M18 2.0845
+                   a 15.9155 15.9155 0 0 1 0 31.831
+                   a 15.9155 15.9155 0 0 1 0 -31.831"
+                fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="2.8"/>
+          <path class="meter" d="M18 2.0845
+                   a 15.9155 15.9155 0 0 1 0 31.831
+                   a 15.9155 15.9155 0 0 1 0 -31.831"
+                fill="none" stroke="url(#g1)" stroke-width="2.8" stroke-dasharray="0 100" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="g1" x1="0" x2="1">
+              <stop offset="0%" stop-color="var(--ghost-red)"/>
+              <stop offset="100%" stop-color="var(--ghost-deep)"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="label">Python<small>85%</small></div>
+      </div>
+
+      <div class="radial" data-level="75" title="Java 75%">
+        <svg viewBox="0 0 36 36">
+          <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="2.8"/>
+          <path class="meter" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="url(#g2)" stroke-width="2.8" stroke-dasharray="0 100" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="g2" x1="0" x2="1">
+              <stop offset="0%" stop-color="var(--ghost-red)"/>
+              <stop offset="100%" stop-color="#ff7b7b"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="label">Java<small>75%</small></div>
+      </div>
+
+      <div class="radial" data-level="80" title="HTML/CSS 80%">
+        <svg viewBox="0 0 36 36">
+          <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="2.8"/>
+          <path class="meter" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="url(#g3)" stroke-width="2.8" stroke-dasharray="0 100" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="g3" x1="0" x2="1">
+              <stop offset="0%" stop-color="#ff6b6b"/>
+              <stop offset="100%" stop-color="var(--ghost-deep)"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="label">HTML/CSS<small>80%</small></div>
+      </div>
+
+      <div class="radial" data-level="70" title="SQL 70%">
+        <svg viewBox="0 0 36 36">
+          <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="2.8"/>
+          <path class="meter" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="url(#g4)" stroke-width="2.8" stroke-dasharray="0 100" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="g4" x1="0" x2="1">
+              <stop offset="0%" stop-color="#ff4d4d"/>
+              <stop offset="100%" stop-color="var(--ghost-deep)"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="label">SQL<small>70%</small></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects" aria-label="Projects">
+    <h2 style="color:var(--ghost-red);margin-bottom:6px">Selected Projects</h2>
+    <div style="color:var(--muted);margin-bottom:12px">Interactive, polished, and production-minded.</div>
+
+    <div class="projects-wrap">
+      <div class="carousel" id="carousel">
+        <!-- cards will be injected by JS -->
+      </div>
+      <div class="carousel-controls" id="carouselDots" aria-hidden="false"></div>
+    </div>
+  </section>
+
+  <!-- CERTIFICATES -->
+  <section id="certificates" aria-label="Certificates">
+    <h2 style="color:var(--ghost-red);margin-bottom:8px">Certificates</h2>
+    <div class="certs" id="certs">
+      <div class="cert"><h5>Cloud Computing - NPTEL</h5><p>07/2024 - 09/2024 • Service models, virtualization, cloud security</p></div>
+      <div class="cert"><h5>Python Fullstack - Codeworks</h5><p>08/2024 - 03/2025 • Django, Angular, Node.js, full-stack projects</p></div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" aria-label="Contact">
+    <h2 style="color:var(--ghost-red);margin-bottom:8px">Contact</h2>
+    <div class="contact-card">
+      <form id="contactForm" onsubmit="return false;">
+        <div class="field">
+          <input id="name" type="text" placeholder=" " required />
+          <label for="name">Your name</label>
+        </div>
+        <div class="field">
+          <input id="email" type="email" placeholder=" " required />
+          <label for="email">Email address</label>
+        </div>
+        <div class="field">
+          <textarea id="message" rows="5" placeholder=" " required></textarea>
+          <label for="message">Message</label>
+        </div>
+        <button class="submit" id="sendBtn">Send Message</button>
+        <div id="formStatus" style="color:var(--muted);margin-top:10px;font-size:0.95rem"></div>
+      </form>
+    </div>
+  </section>
+
+  <footer>
+    <div>© <strong>Namaji Subhan</strong> — Built with HTML, CSS & JavaScript</div>
+  </footer>
+</main>
+
+<!-- =========================
+     Scripts: particles, animations, interactions
+     ========================= -->
+<script>
+/* ---------------------------
+   Canvas particles + cursor trail
+   --------------------------- */
+(() => {
+  const canvas = document.getElementById('bgCanvas');
+  const ctx = canvas.getContext('2d');
+  let w = canvas.width = innerWidth;
+  let h = canvas.height = innerHeight;
+  const particles = [];
+  const cursor = {x:-9999,y:-9999};
+
+  function rand(min,max){ return Math.random()*(max-min)+min }
+
+  // create drifting particles
+  for(let i=0;i<80;i++){
+    particles.push({
+      x: rand(0,w),
+      y: rand(0,h),
+      vx: rand(-0.2,0.2),
+      vy: rand(-0.1,0.4),
+      r: rand(0.6,2.6),
+      life: rand(60,240),
+      hue: rand(0,360),
+      alpha: rand(0.06,0.18)
+    });
+  }
+
+  function resize(){ w=canvas.width=innerWidth; h=canvas.height=innerHeight; }
+  addEventListener('resize', resize);
+
+  addEventListener('mousemove', e => { cursor.x=e.clientX; cursor.y=e.clientY; });
+  addEventListener('mouseleave', ()=>{ cursor.x=-9999; cursor.y=-9999; });
+
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    // subtle vignette
+    const g = ctx.createLinearGradient(0,0,w,h);
+    g.addColorStop(0,'rgba(0,0,0,0)');
+    g.addColorStop(1,'rgba(0,0,0,0.25)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0,0,w,h);
+
+    // draw particles
+    particles.forEach((p,i)=>{
+      p.x += p.vx + Math.sin((p.y+p.x)/120)*0.1;
+      p.y += p.vy;
+      p.life--;
+      if(p.y>h+20 || p.x<-40 || p.x>w+40 || p.life<0){
+        p.x = rand(0,w); p.y = -10; p.life = rand(60,240);
+      }
+      // glow
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(255,26,26,${p.alpha})`;
+      ctx.shadowBlur = 12;
+      ctx.shadowColor = 'rgba(255,26,26,0.12)';
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    });
+
+    // cursor trail
+    if(cursor.x>-9000){
+      for(let i=0;i<6;i++){
+        const t = Math.random()*18+6;
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(255,26,26,${0.08 + Math.random()*0.12})`;
+        ctx.arc(cursor.x + Math.sin(Date.now()/200 + i)*12, cursor.y + Math.cos(Date.now()/180 + i)*12, t/12, 0, Math.PI*2);
+        ctx.fill();
+      }
+    }
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ---------------------------
+   Splash hide + reveal animations
+   --------------------------- */
+(() => {
+  const splash = document.getElementById('splash');
+  // show splash for 2.2s then hide
+  setTimeout(()=> {
+    splash.classList.add('splash-hidden');
+    // reveal first sections with stagger
+    document.querySelectorAll('section').forEach((s, i) => {
+      setTimeout(()=> s.classList.add('visible'), 600 + i*160);
+    });
+  }, 2200);
+})();
+
+/* ---------------------------
+   Radial meters animation
+   --------------------------- */
+(() => {
+  const radials = document.querySelectorAll('.radial');
+  radials.forEach(r => {
+    const svgPath = r.querySelector('.meter');
+    const level = parseInt(r.getAttribute('data-level'),10) || 60;
+    // circumference of circle path ~ 100 units in our dasharray
+    const dash = (level / 100) * 100;
+    // animate stroke-dasharray
+    setTimeout(()=> {
+      svgPath.style.transition = 'stroke-dasharray 1.6s cubic-bezier(.2,.9,.2,1)';
+      svgPath.setAttribute('stroke-dasharray', `${dash} 100`);
+    }, 800);
+    // hover detail
+    r.addEventListener('mouseenter', ()=> {
+      r.style.transform = 'translateY(-8px) scale(1.02)';
+      r.style.boxShadow = '0 18px 60px rgba(255,26,26,0.06)';
+    });
+    r.addEventListener('mouseleave', ()=> {
+      r.style.transform = '';
+      r.style.boxShadow = '';
+    });
+  });
+})();
+
+/* ---------------------------
+   Projects carousel (3D)
+   --------------------------- */
+(() => {
+  const projects = [
+    {title:'Respiratory Disease Classification', desc:'Python • CNN • MFCC • Tkinter GUI • 85%+ accuracy'},
+    {title:'Weather App', desc:'JS • Fetch API • Responsive UI • Icons & caching'},
+    {title:'Expense Tracker', desc:'HTML/CSS/JS • LocalStorage • Charts'},
+    {title:'Interactive Quiz', desc:'Vanilla JS • Timer • Scoreboard • Animations'}
+  ];
+  const carousel = document.getElementById('carousel');
+  const dots = document.getElementById('carouselDots');
+
+  // create cards
+  projects.forEach((p, idx) => {
+    const el = document.createElement('div');
+    el.className = 'card3d';
+    el.innerHTML = `<div class="title">${p.title}</div><div class="desc">${p.desc}</div><div style="margin-top:auto;display:flex;gap:8px"><a class="btn" href="#projects" style="padding:8px 10px;font-size:13px">View</a><a class="btn secondary" href="#" style="padding:8px 10px;font-size:13px">Code</a></div>`;
+    carousel.appendChild(el);
+
+    const dot = document.createElement('div');
+    dot.className = 'dot-btn';
+    dot.addEventListener('click', ()=> setIndex(idx));
+    dots.appendChild(dot);
+  });
+
+  const cards = Array.from(document.querySelectorAll('.card3d'));
+  let index = 0;
+  function layout(){
+    const mid = Math.floor(cards.length/2);
+    cards.forEach((c,i)=>{
+      const offset = i - index;
+      const abs = Math.abs(offset);
+      const z = 300 - abs*120;
+      const x = offset * 220;
+      const rot = offset * -12;
+      c.style.opacity = abs>3 ? 0 : 1;
+      c.style.transform = `translate3d(${x}px, -50%, ${-abs*60}px) rotateY(${rot}deg)`;
+      c.style.left = '50%';
+      c.style.top = '50%';
+      c.style.zIndex = 100 - abs;
+    });
+    // dots
+    dots.querySelectorAll('.dot-btn').forEach((d,i)=> d.classList.toggle('active', i===index));
+  }
+  function setIndex(i){
+    index = (i + cards.length) % cards.length;
+    layout();
+  }
+  // initial
+  setIndex(0);
+  // auto rotate
+  let auto = setInterval(()=> setIndex((index+1)%cards.length), 4200);
+  carousel.addEventListener('mouseenter', ()=> clearInterval(auto));
+  carousel.addEventListener('mouseleave', ()=> auto = setInterval(()=> setIndex((index+1)%cards.length), 4200));
+})();
+
+/* ---------------------------
+   Certificates slider (simple auto-scroll)
+   --------------------------- */
+(() => {
+  const wrap = document.getElementById('certs');
+  let pos = 0;
+  setInterval(()=> {
+    pos = (pos + 1) % wrap.children.length;
+    wrap.style.transform = `translateX(-${pos * (wrap.children[0].offsetWidth + 12)}px)`;
+    wrap.style.transition = 'transform 0.8s cubic-bezier(.2,.9,.2,1)';
+  }, 3800);
+})();
+
+/* ---------------------------
+   Contact form (fake submit)
+   --------------------------- */
+(() => {
+  const form = document.getElementById('contactForm');
+  const status = document.getElementById('formStatus');
+  const btn = document.getElementById('sendBtn');
+  btn.addEventListener('click', ()=> {
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const msg = document.getElementById('message').value.trim();
+    if(!name || !email || !msg){ status.textContent = 'Please fill all fields.'; return; }
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+    status.textContent = '';
+    setTimeout(()=> {
+      btn.disabled = false;
+      btn.textContent = 'Send Message';
+      status.textContent = 'Message sent. I will get back to you soon.';
+    }, 1200);
+  });
+})();
+
+/* ---------------------------
+   Smooth scroll for nav links
+   --------------------------- */
+(() => {
+  document.querySelectorAll('nav a, .btn[href^="#"]').forEach(a=>{
+    a.addEventListener('click', e=>{
+      const href = a.getAttribute('href');
+      if(href && href.startsWith('#')){
+        e.preventDefault();
+        const el = document.querySelector(href);
+        if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+      }
+    });
+  });
+})();
+
+/* ---------------------------
+   Reveal sections on scroll (staggered)
+   --------------------------- */
+(() => {
+  const sections = document.querySelectorAll('main section');
+  function check(){
+    sections.forEach((s, i) => {
+      const r = s.getBoundingClientRect();
+      if(r.top < innerHeight - 120) s.classList.add('visible');
+    });
+  }
+  addEventListener('scroll', check);
+  addEventListener('resize', check);
+  setTimeout(check, 600);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,531 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Namaji Subhan | Java Developer Portfolio">
+<title>Namaji Subhan | Java Developer</title>
+
+<style>
+:root{
+  --bg:#050505;
+  --panel:rgba(18,18,18,.68);
+  --panel2:rgba(255,255,255,.035);
+  --text:#f5f5f5;
+  --muted:#999;
+  --red:#ff2020;
+  --red2:#7d0505;
+  --line:rgba(255,255,255,.09);
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  overflow-x:hidden;
+}
+body:before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:9998;
+  background:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px);
+  background-size:100% 4px;opacity:.16;
+}
+a{color:inherit;text-decoration:none}
+button{font:inherit}
+#bgCanvas{position:fixed;inset:0;width:100%;height:100%;z-index:-3}
+.noise{position:fixed;inset:0;pointer-events:none;z-index:-2;opacity:.06;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E")}
+
+/* SPLASH */
+#splash{
+  position:fixed;inset:0;z-index:9999;background:#030303;
+  display:grid;place-items:center;overflow:hidden;
+}
+.splash-grid{
+  position:absolute;inset:-20%;
+  background:
+    linear-gradient(rgba(255,32,32,.07) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,32,32,.07) 1px,transparent 1px);
+  background-size:55px 55px;
+  transform:perspective(500px) rotateX(62deg) translateY(30%);
+  animation:gridMove 5s linear infinite;
+}
+.splash-glow{
+  position:absolute;width:45vw;height:45vw;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,20,20,.17),transparent 68%);
+  filter:blur(18px);animation:pulse 2.8s ease-in-out infinite;
+}
+.splash-inner{text-align:center;position:relative;z-index:2}
+.splash-kicker{
+  font-size:11px;letter-spacing:.35em;color:#777;text-transform:uppercase;
+  animation:fadeUp .8s .15s both;
+}
+.splash-name{
+  margin:18px 0 10px;font-size:clamp(48px,10vw,125px);
+  line-height:.82;font-weight:900;letter-spacing:-.07em;text-transform:uppercase;
+  color:var(--red);text-shadow:0 0 18px rgba(255,32,32,.35),0 0 80px rgba(255,32,32,.12);
+  animation:nameIn 1.15s var(--ease) both;
+  position:relative;
+}
+.splash-name:after{
+  content:"NAMaji SUBHAN";position:absolute;inset:0;color:#fff;opacity:.08;
+  transform:translate(5px,2px);clip-path:polygon(0 40%,100% 30%,100% 53%,0 64%);
+  animation:glitch 1.8s infinite;
+}
+.splash-sub{color:#aaa;letter-spacing:.12em;font-size:13px;animation:fadeUp .8s .55s both}
+.loading{width:190px;height:2px;background:#222;margin:30px auto 0;overflow:hidden}
+.loading span{display:block;height:100%;width:0;background:var(--red);box-shadow:0 0 15px var(--red);animation:load 1.9s .35s forwards}
+.splash-count{margin-top:12px;color:#555;font:11px ui-monospace,monospace;animation:fadeUp .8s .7s both}
+
+/* APP */
+#app{opacity:0;transition:opacity 1s ease}
+#app.ready{opacity:1}
+.wrap{width:min(1160px,92%);margin:auto}
+header{
+  position:fixed;top:18px;left:50%;transform:translateX(-50%);
+  width:min(1160px,92%);z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:11px 14px;border:1px solid var(--line);border-radius:17px;
+  background:rgba(5,5,5,.62);backdrop-filter:blur(20px);
+  box-shadow:0 15px 50px rgba(0,0,0,.35);
+}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{
+  width:40px;height:40px;border-radius:11px;display:grid;place-items:center;
+  font-weight:900;color:#080808;background:linear-gradient(135deg,var(--red),var(--red2));
+  box-shadow:0 0 25px rgba(255,32,32,.18);transition:.35s var(--ease)
+}
+.brand:hover .logo{transform:rotate(-8deg) scale(1.08)}
+.brand-name{font-weight:800;font-size:14px}
+.brand-role{font-size:10px;color:#777;margin-top:2px}
+nav{display:flex;gap:5px}
+nav a{padding:9px 12px;color:#999;font-size:12px;font-weight:700;border-radius:9px;transition:.3s}
+nav a:hover{color:#fff;background:rgba(255,32,32,.08)}
+.menu{display:none;background:none;border:0;color:white;font-size:22px}
+
+/* HERO */
+.hero{min-height:100vh;display:grid;place-items:center;padding:150px 0 80px;position:relative}
+.hero-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:30px;align-items:center}
+.eyebrow{font:800 11px ui-monospace,monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--red)}
+.hero h1{
+  font-size:clamp(46px,7vw,88px);line-height:.9;letter-spacing:-.07em;
+  margin:15px 0 24px;max-width:850px;
+}
+.hero h1 .outline{color:transparent;-webkit-text-stroke:1px #777}
+.hero h1 .red{color:var(--red)}
+.lead{max-width:690px;color:#a4a4a4;font-size:16px;line-height:1.8}
+.cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;padding:12px 17px;border-radius:11px;
+  border:1px solid var(--line);font-size:13px;font-weight:800;transition:.35s var(--ease);
+  position:relative;overflow:hidden;
+}
+.btn:before{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent,rgba(255,255,255,.16),transparent);transform:translateX(-120%);transition:.65s}
+.btn:hover:before{transform:translateX(120%)}
+.btn:hover{transform:translateY(-4px);border-color:rgba(255,32,32,.4)}
+.btn.primary{background:linear-gradient(135deg,var(--red),var(--red2));color:#080808;border-color:transparent}
+.hero-card{
+  min-height:400px;padding:26px;border:1px solid var(--line);border-radius:25px;
+  background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.012));
+  position:relative;overflow:hidden;transform-style:preserve-3d;
+}
+.hero-card:before{
+  content:"";position:absolute;width:240px;height:240px;right:-100px;top:-100px;
+  background:radial-gradient(circle,rgba(255,32,32,.25),transparent 65%);filter:blur(8px)
+}
+.orbit{position:absolute;inset:45px;border:1px solid rgba(255,32,32,.16);border-radius:50%;animation:spin 16s linear infinite}
+.orbit:nth-child(2){inset:80px;animation-duration:10s;animation-direction:reverse}
+.center-monogram{
+  position:absolute;inset:0;display:grid;place-items:center;font-size:72px;font-weight:900;
+  color:rgba(255,32,32,.9);text-shadow:0 0 45px rgba(255,32,32,.25)
+}
+.stat-row{position:absolute;left:22px;right:22px;bottom:22px;display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.stat{padding:13px;border:1px solid var(--line);border-radius:12px;background:rgba(0,0,0,.35)}
+.stat b{display:block;font-size:17px}.stat span{font-size:10px;color:#777}
+
+/* SECTIONS */
+section{padding:115px 0;position:relative}
+.section-top{display:flex;justify-content:space-between;align-items:end;gap:30px;margin-bottom:35px}
+.section-title{font-size:clamp(32px,5vw,58px);line-height:.95;letter-spacing:-.055em;margin:8px 0 0}
+.section-note{max-width:430px;color:#777;font-size:13px;line-height:1.7}
+.reveal{opacity:0;transform:translateY(45px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.reveal.show{opacity:1;transform:none}
+
+/* ABOUT */
+.about-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px}
+.glass{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:28px}
+.glass p{color:#999;line-height:1.85}
+.focus-list{display:grid;gap:10px;margin-top:25px}
+.focus{
+  display:flex;gap:12px;align-items:center;padding:13px;border:1px solid var(--line);
+  border-radius:12px;background:var(--panel2)
+}
+.focus i{font-style:normal;color:var(--red);font-size:18px}.focus span{font-size:13px;color:#bbb}
+
+/* SKILLS */
+.skill-cloud{display:flex;flex-wrap:wrap;gap:10px}
+.skill{
+  padding:13px 16px;border:1px solid var(--line);border-radius:12px;background:var(--panel);
+  font-size:13px;color:#ddd;transition:.35s var(--ease);cursor:default
+}
+.skill:hover{transform:translateY(-6px) rotate(-1deg);border-color:rgba(255,32,32,.5);box-shadow:0 15px 35px rgba(255,32,32,.08)}
+.skill small{display:block;color:#666;margin-top:3px;font-size:9px}
+
+/* PROJECTS */
+.projects{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.project{
+  min-height:340px;position:relative;overflow:hidden;
+  background:linear-gradient(145deg,#111,rgba(12,12,12,.7));
+  border:1px solid var(--line);border-radius:22px;padding:27px;
+  transition:.5s var(--ease);transform-style:preserve-3d
+}
+.project:after{
+  content:"01";position:absolute;right:20px;top:14px;font:900 70px ui-monospace,monospace;
+  color:rgba(255,255,255,.025);transition:.4s
+}
+.project:nth-child(2):after{content:"02"}
+.project:hover{transform:translateY(-10px);border-color:rgba(255,32,32,.35);box-shadow:0 30px 80px rgba(0,0,0,.45)}
+.project:hover:after{color:rgba(255,32,32,.07);transform:scale(1.1)}
+.project-index{color:var(--red);font:800 10px ui-monospace,monospace;letter-spacing:.2em}
+.project h3{font-size:27px;letter-spacing:-.035em;margin:18px 0 10px}
+.project p{color:#888;line-height:1.75;font-size:14px;max-width:570px}
+.techs{display:flex;flex-wrap:wrap;gap:7px;margin-top:24px}
+.tech{font:700 10px ui-monospace,monospace;padding:7px 9px;border-radius:7px;background:#0b0b0b;border:1px solid var(--line);color:#aaa}
+.project-link{position:absolute;bottom:25px;right:25px;color:var(--red);font-size:12px;font-weight:800}
+
+/* TIMELINE */
+.timeline{position:relative;max-width:850px;margin:auto}
+.timeline:before{content:"";position:absolute;left:10px;top:0;bottom:0;width:1px;background:linear-gradient(var(--red),transparent)}
+.t-item{position:relative;padding:0 0 42px 40px}
+.t-dot{position:absolute;left:4px;top:5px;width:13px;height:13px;border-radius:50%;background:var(--red);box-shadow:0 0 0 5px rgba(255,32,32,.08),0 0 20px rgba(255,32,32,.3)}
+.t-date{color:var(--red);font:800 10px ui-monospace,monospace;letter-spacing:.15em}
+.t-item h3{margin:8px 0 4px;font-size:20px}.t-item p{margin:0;color:#777;font-size:13px;line-height:1.7}
+
+/* CERTS */
+.certs{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.cert{
+  padding:25px;border:1px solid var(--line);border-radius:18px;background:var(--panel);
+  transition:.4s var(--ease);position:relative;overflow:hidden
+}
+.cert:before{content:"";position:absolute;left:0;top:0;width:4px;height:100%;background:var(--red)}
+.cert:hover{transform:translateY(-7px);border-color:rgba(255,32,32,.3)}
+.cert-kicker{color:var(--red);font:800 10px ui-monospace,monospace}
+.cert h3{margin:9px 0;font-size:20px}.cert p{color:#777;font-size:13px;line-height:1.7}
+
+/* CONTACT */
+.contact{
+  text-align:center;padding:70px 25px;border:1px solid var(--line);border-radius:25px;
+  background:radial-gradient(circle at center,rgba(255,32,32,.09),transparent 48%),var(--panel)
+}
+.contact .section-title{margin-bottom:18px}
+.contact p{color:#777;max-width:580px;margin:0 auto 25px}
+.contact-links{display:flex;justify-content:center;flex-wrap:wrap;gap:10px}
+footer{padding:35px 0 70px;text-align:center;color:#555;font-size:11px}
+
+/* CURSOR */
+.cursor-dot,.cursor-ring{position:fixed;pointer-events:none;z-index:10000;border-radius:50%;transform:translate(-50%,-50%)}
+.cursor-dot{width:5px;height:5px;background:var(--red);box-shadow:0 0 12px var(--red)}
+.cursor-ring{width:28px;height:28px;border:1px solid rgba(255,32,32,.55);transition:width .2s,height .2s,border-color .2s}
+.cursor-ring.big{width:52px;height:52px;border-color:rgba(255,32,32,.85)}
+@media(pointer:coarse){.cursor-dot,.cursor-ring{display:none}}
+
+/* ANIMATIONS */
+@keyframes gridMove{to{transform:perspective(500px) rotateX(62deg) translateY(8%)}}
+@keyframes pulse{50%{transform:scale(1.2);opacity:.65}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:none}}
+@keyframes nameIn{from{opacity:0;transform:scale(.8);filter:blur(10px)}to{opacity:1;transform:none;filter:none}}
+@keyframes load{to{width:100%}}
+@keyframes glitch{0%,88%,100%{transform:translate(5px,2px)}90%{transform:translate(-7px,-2px)}93%{transform:translate(4px,3px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:850px){
+  nav{display:none}.menu{display:block}
+  header.open nav{display:flex;position:absolute;top:62px;left:0;right:0;padding:10px;flex-direction:column;background:rgba(5,5,5,.95);border:1px solid var(--line);border-radius:14px}
+  .hero-grid,.about-grid,.projects,.certs{grid-template-columns:1fr}
+  .hero{padding-top:125px}.hero-card{min-height:300px}
+  .section-top{display:block}.section-note{margin-top:15px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*:before,*:after{animation-duration:.001ms!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+
+<body>
+<canvas id="bgCanvas"></canvas>
+<div class="noise"></div>
+
+<div id="splash">
+  <div class="splash-grid"></div>
+  <div class="splash-glow"></div>
+  <div class="splash-inner">
+    <div class="splash-kicker">WELCOME TO MY PORTFOLIO</div>
+    <div class="splash-name">Namaji Subhan</div>
+    <div class="splash-sub">JAVA DEVELOPER · COMPUTER SCIENCE GRADUATE</div>
+    <div class="loading"><span></span></div>
+    <div class="splash-count" id="count">INITIALIZING 00%</div>
+  </div>
+</div>
+
+<div id="app">
+<header id="header">
+  <a class="brand" href="#home">
+    <div class="logo">NS</div>
+    <div><div class="brand-name">Namaji Subhan</div><div class="brand-role">Java Developer</div></div>
+  </a>
+  <button class="menu" id="menu">☰</button>
+  <nav>
+    <a href="#home">Home</a><a href="#about">About</a><a href="#skills">Skills</a>
+    <a href="#projects">Projects</a><a href="#education">Education</a><a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<main>
+<section class="hero" id="home">
+  <div class="wrap hero-grid">
+    <div class="reveal">
+      <div class="eyebrow">01 / JAVA · BACKEND · FULL STACK</div>
+      <h1>I build <span class="red">Java</span><br><span class="outline">powered</span> applications.</h1>
+      <p class="lead">
+        Computer Science graduate with hands-on experience in Java, SQL and object-oriented
+        programming. I work with Spring Boot, JDBC, MySQL, multithreading and practical
+        full-stack projects, with a focus on clean and maintainable code.
+      </p>
+      <div class="cta">
+        <a class="btn primary magnetic" href="#projects">Explore Projects ↗</a>
+        <a class="btn magnetic" href="subhansResume.pdf" target="_blank">View Resume</a>
+      </div>
+    </div>
+
+    <div class="hero-card tilt reveal">
+      <div class="orbit"></div><div class="orbit"></div>
+      <div class="center-monogram">NS</div>
+      <div class="stat-row">
+        <div class="stat"><b>Java</b><span>CORE FOCUS</span></div>
+        <div class="stat"><b>Spring</b><span>BACKEND</span></div>
+        <div class="stat"><b>MySQL</b><span>DATABASE</span></div>
+        <div class="stat"><b>REST</b><span>API DESIGN</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="about">
+<div class="wrap">
+  <div class="section-top reveal">
+    <div><div class="eyebrow">02 / ABOUT</div><h2 class="section-title">Code with purpose.<br>Learn by building.</h2></div>
+    <div class="section-note">My current profile is centered around Java backend development, while keeping enough full-stack knowledge to build complete applications.</div>
+  </div>
+  <div class="about-grid">
+    <article class="glass reveal">
+      <h3>Profile</h3>
+      <p>
+        I am a Computer Science graduate who enjoys turning programming concepts into working
+        applications. My project work includes CRUD systems, REST APIs, authentication,
+        database integration and real-time chat concepts using Java technologies.
+      </p>
+      <p>
+        I am familiar with Spring Boot and MySQL and continue to strengthen my Core Java,
+        Advanced Java and backend development skills through hands-on practice.
+      </p>
+    </article>
+    <div class="glass reveal">
+      <div class="eyebrow">CURRENT FOCUS</div>
+      <div class="focus-list">
+        <div class="focus"><i>☕</i><span>Core Java · OOP · Collections</span></div>
+        <div class="focus"><i>⚙</i><span>Spring Boot · REST APIs · JDBC</span></div>
+        <div class="focus"><i>▣</i><span>SQL · MySQL · Database Integration</span></div>
+        <div class="focus"><i>↗</i><span>Clean, scalable enterprise applications</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<section id="skills">
+<div class="wrap">
+  <div class="section-top reveal">
+    <div><div class="eyebrow">03 / SKILLS</div><h2 class="section-title">The toolkit.</h2></div>
+    <div class="section-note">No made-up percentage meters. Just the technologies and concepts currently represented in my resume.</div>
+  </div>
+  <div class="skill-cloud reveal">
+    <div class="skill">Java<small>STRONG</small></div>
+    <div class="skill">OOP<small>CORE CONCEPT</small></div>
+    <div class="skill">Multithreading<small>JAVA</small></div>
+    <div class="skill">Collections<small>JAVA</small></div>
+    <div class="skill">Spring Boot<small>BACKEND</small></div>
+    <div class="skill">JDBC<small>DATABASE ACCESS</small></div>
+    <div class="skill">REST APIs<small>WEB SERVICES</small></div>
+    <div class="skill">SQL / MySQL<small>DATABASE</small></div>
+    <div class="skill">HTML / CSS<small>WEB</small></div>
+    <div class="skill">JavaScript<small>WEB</small></div>
+    <div class="skill">Python<small>BASICS</small></div>
+    <div class="skill">Eclipse<small>IDE</small></div>
+    <div class="skill">VS Code<small>EDITOR</small></div>
+    <div class="skill">Jupyter Notebook<small>TOOL</small></div>
+  </div>
+</div>
+</section>
+
+<section id="projects">
+<div class="wrap">
+  <div class="section-top reveal">
+    <div><div class="eyebrow">04 / PROJECTS</div><h2 class="section-title">Things I built.</h2></div>
+    <div class="section-note">Two resume-backed projects, presented with enough technical detail to show what actually went into them.</div>
+  </div>
+  <div class="projects">
+    <article class="project tilt reveal">
+      <div class="project-index">PROJECT / 01</div>
+      <h3>Employee Management System</h3>
+      <p>Full-stack application built with Spring Boot and React, featuring CRUD operations, role-based authentication, REST APIs, MySQL integration and a responsive HR dashboard.</p>
+      <div class="techs"><span class="tech">JAVA</span><span class="tech">SPRING BOOT</span><span class="tech">REACT</span><span class="tech">REST</span><span class="tech">MYSQL</span></div>
+      <a class="project-link" href="#contact">Discuss project ↗</a>
+    </article>
+    <article class="project tilt reveal">
+      <div class="project-index">PROJECT / 02</div>
+      <h3>E-Commerce Platform</h3>
+      <p>Java and Spring Boot platform with product catalog, shopping cart and order management. Includes JWT authentication, simulated payment gateway and modular microservices principles.</p>
+      <div class="techs"><span class="tech">JAVA</span><span class="tech">SPRING BOOT</span><span class="tech">JWT</span><span class="tech">SQL</span><span class="tech">MICROSERVICES</span></div>
+      <a class="project-link" href="#contact">Discuss project ↗</a>
+    </article>
+  </div>
+</div>
+</section>
+
+<section id="education">
+<div class="wrap">
+  <div class="section-top reveal">
+    <div><div class="eyebrow">05 / JOURNEY</div><h2 class="section-title">Education &<br>certifications.</h2></div>
+  </div>
+  <div class="timeline">
+	<div class="t-item reveal"><span class="t-dot"></span><div class="t-date">2025 — 2026</div><h3>Java Full Stack Development · JSpiders</h3><p>Marathahalli, Bangalore · Core Java, Advanced Java, JSP, Servlets, HTML, CSS, JavaScript, SQL and database integration.</p></div>
+    <div class="t-item reveal"><span class="t-dot"></span><div class="t-date">2021 — 2025</div><h3>B.Tech · Computer Science & Engineering</h3><p>Gates Institute of Technology, Gooty · 70%</p></div>
+    
+    <div class="t-item reveal"><span class="t-dot"></span><div class="t-date">2024</div><h3>Cloud Computing · NPTEL</h3><p>12-week certification covering IaaS, PaaS, SaaS, virtualization, scalability and cloud security · Score: 78%.</p></div>
+    <div class="t-item reveal"><span class="t-dot"></span><div class="t-date">2019 — 2021</div><h3>Intermediate · MPC</h3><p>SSGS Junior Aided College, Guntakal · 61%</p></div>
+  </div>
+</div>
+</section>
+
+<section id="certificates">
+<div class="wrap">
+  <div class="section-top reveal">
+    <div><div class="eyebrow">06 / CERTIFICATES</div><h2 class="section-title">Proof of learning.</h2></div>
+  </div>
+  <div class="certs">
+    <article class="cert reveal"><div class="cert-kicker">NPTEL · 07/2024 — 09/2024</div><h3>Cloud Computing</h3><p>12-week certification covering cloud service models, virtualization, scalability and security. Score: 78%.</p></article>
+    <article class="cert reveal"><div class="cert-kicker">JSPIDERS · 09/2025 — 03/2026</div><h3>Java Full Stack Development</h3><p>Training in Core Java, Advanced Java, JSP, Servlets, HTML, CSS, JavaScript, SQL and database integration.</p></article>
+  </div>
+</div>
+</section>
+
+<section id="contact">
+<div class="wrap">
+  <div class="contact reveal">
+    <div class="eyebrow">24/7 CONTACT</div>
+    <h2 class="section-title">Let's build something.</h2>
+    <div class="contact-links">
+      <a class="btn primary magnetic" href="mailto:subhannamaji@gmail.com">Email Me ↗</a>
+      <a class="btn magnetic" href="https://www.linkedin.com/in/namaji-subhan-497980227/" target="_blank" rel="noopener">LinkedIn ↗</a>
+      <a class="btn magnetic" href="https://github.com/subha2002666" target="_blank" rel="noopener">GitHub ↗</a>
+      <a class="btn magnetic" href="tel:+916303191361">Call ↗</a>
+    </div>
+  </div>
+</div>
+</section>
+</main>
+
+<footer>© <span id="year"></span> Namaji Subhan · Built with HTML, CSS & JavaScript</footer>
+</div>
+
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<script>
+/* Splash */
+const splash=document.getElementById("splash"),app=document.getElementById("app"),count=document.getElementById("count");
+let n=0;
+const counter=setInterval(()=>{
+  n+=Math.floor(Math.random()*8)+4;
+  if(n>=100){n=100;clearInterval(counter)}
+  count.textContent="INITIALIZING "+String(n).padStart(2,"0")+"%";
+},70);
+setTimeout(()=>{
+  splash.style.transition="opacity .9s cubic-bezier(.16,1,.3,1),transform .9s";
+  splash.style.opacity="0";splash.style.transform="scale(1.03)";
+  app.classList.add("ready");
+  setTimeout(()=>splash.remove(),950);
+},2400);
+
+/* Canvas background */
+(()=>{
+ const c=document.getElementById("bgCanvas"),x=c.getContext("2d");
+ let w,h,dots=[],mouse={x:-999,y:-999};
+ function resize(){w=c.width=innerWidth;h=c.height=innerHeight}
+ function make(){dots=Array.from({length:70},()=>({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25,r:Math.random()*1.8+.3}))}
+ function draw(){
+   x.clearRect(0,0,w,h);
+   dots.forEach((p,i)=>{
+     p.x+=p.vx;p.y+=p.vy;
+     if(p.x<0||p.x>w)p.vx*=-1;if(p.y<0||p.y>h)p.vy*=-1;
+     let dx=mouse.x-p.x,dy=mouse.y-p.y,dist=Math.hypot(dx,dy);
+     if(dist<150){p.x-=dx*.0007;p.y-=dy*.0007}
+     x.beginPath();x.fillStyle="rgba(255,32,32,.35)";x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fill();
+     for(let j=i+1;j<dots.length;j++){
+       let q=dots[j],dd=Math.hypot(p.x-q.x,p.y-q.y);
+       if(dd<100){x.strokeStyle=`rgba(255,32,32,${.045*(1-dd/100)})`;x.lineWidth=1;x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.stroke()}
+     }
+   });
+   requestAnimationFrame(draw);
+ }
+ addEventListener("resize",()=>{resize();make()});
+ addEventListener("mousemove",e=>{mouse.x=e.clientX;mouse.y=e.clientY});
+ resize();make();draw();
+})();
+
+/* Scroll reveal */
+const observer=new IntersectionObserver(entries=>{
+ entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add("show")})
+},{threshold:.12});
+document.querySelectorAll(".reveal").forEach(e=>observer.observe(e));
+
+/* Mobile menu */
+document.getElementById("menu").onclick=()=>document.getElementById("header").classList.toggle("open");
+document.querySelectorAll("nav a").forEach(a=>a.onclick=()=>document.getElementById("header").classList.remove("open"));
+
+/* 3D tilt */
+document.querySelectorAll(".tilt").forEach(card=>{
+ card.addEventListener("mousemove",e=>{
+   if(matchMedia("(pointer:coarse)").matches)return;
+   const r=card.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
+   const rx=(y/r.height-.5)*-7,ry=(x/r.width-.5)*7;
+   card.style.transform=`perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-5px)`;
+ });
+ card.addEventListener("mouseleave",()=>card.style.transform="");
+});
+
+/* Magnetic buttons */
+document.querySelectorAll(".magnetic").forEach(btn=>{
+ btn.addEventListener("mousemove",e=>{
+   if(matchMedia("(pointer:coarse)").matches)return;
+   const r=btn.getBoundingClientRect();
+   btn.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.16}px,${(e.clientY-r.top-r.height/2)*.16}px)`;
+ });
+ btn.addEventListener("mouseleave",()=>btn.style.transform="");
+});
+
+/* Cursor */
+const dot=document.getElementById("cursorDot"),ring=document.getElementById("cursorRing");
+addEventListener("mousemove",e=>{
+ dot.style.left=e.clientX+"px";dot.style.top=e.clientY+"px";
+ ring.style.left=e.clientX+"px";ring.style.top=e.clientY+"px";
+});
+document.querySelectorAll("a,button,.skill,.project").forEach(el=>{
+ el.addEventListener("mouseenter",()=>ring.classList.add("big"));
+ el.addEventListener("mouseleave",()=>ring.classList.remove("big"));
+});
+
+/* Year */
+document.getElementById("year").textContent=new Date().getFullYear();
+</script>
+</body>
+</html>

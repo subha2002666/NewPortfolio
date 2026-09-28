@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Namaji Subhan - Java Developer portfolio. Java, Spring Boot, SQL, OOP, Multithreading and full-stack development.">
+  <title>Namaji Subhan | Java Developer</title>
+
+  <style>
+    :root{
+      --bg:#070707;
+      --surface:#101010;
+      --surface-2:#151515;
+      --text:#f5f5f5;
+      --muted:#a8a8a8;
+      --accent:#ff2b2b;
+      --accent-dark:#8f1010;
+      --border:rgba(255,255,255,.08);
+      --shadow:0 20px 70px rgba(0,0,0,.45);
+      --radius:18px;
+      --max:1120px;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(255,43,43,.10), transparent 28%),
+        radial-gradient(circle at 85% 70%, rgba(143,16,16,.08), transparent 30%),
+        var(--bg);
+      color:var(--text);
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      line-height:1.6;
+    }
+
+    a{color:inherit;text-decoration:none}
+    .container{width:min(var(--max),92%);margin:auto}
+
+    /* NAV */
+    nav{
+      position:fixed;
+      top:16px;
+      left:50%;
+      transform:translateX(-50%);
+      width:min(var(--max),92%);
+      z-index:100;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:12px 16px;
+      background:rgba(10,10,10,.72);
+      border:1px solid var(--border);
+      border-radius:16px;
+      backdrop-filter:blur(16px);
+      box-shadow:var(--shadow);
+    }
+
+    .brand{display:flex;align-items:center;gap:10px;font-weight:800}
+    .brand-mark{
+      width:38px;height:38px;border-radius:10px;
+      display:grid;place-items:center;
+      background:linear-gradient(135deg,var(--accent),var(--accent-dark));
+      color:#080808;font-weight:900;
+    }
+    .brand small{display:block;color:var(--muted);font-weight:500;font-size:11px}
+    .nav-links{display:flex;gap:20px}
+    .nav-links a{color:var(--muted);font-size:14px;font-weight:650;transition:.2s}
+    .nav-links a:hover{color:var(--accent)}
+
+    /* HERO */
+    header.hero{
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      padding:130px 0 70px;
+    }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns:1.45fr .85fr;
+      gap:28px;
+      align-items:stretch;
+    }
+
+    .hero-main,.hero-side,.card{
+      background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.015));
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+
+    .hero-main{padding:52px}
+    .eyebrow{
+      color:var(--accent);
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+    }
+    h1{
+      font-size:clamp(42px,7vw,78px);
+      line-height:.98;
+      margin:16px 0;
+      letter-spacing:-.045em;
+    }
+    h1 span{color:var(--accent)}
+    .hero-main p{
+      max-width:720px;
+      color:var(--muted);
+      font-size:17px;
+      margin:0;
+    }
+
+    .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:12px 18px;
+      border-radius:11px;
+      border:1px solid var(--border);
+      font-weight:750;
+      transition:.2s;
+    }
+    .btn.primary{
+      background:linear-gradient(135deg,var(--accent),var(--accent-dark));
+      color:#090909;
+      border-color:transparent;
+    }
+    .btn:hover{transform:translateY(-3px);border-color:rgba(255,43,43,.5)}
+
+    .hero-side{padding:28px;display:flex;flex-direction:column;justify-content:space-between}
+    .avatar{
+      width:92px;height:92px;
+      border-radius:22px;
+      display:grid;place-items:center;
+      background:linear-gradient(135deg,var(--accent),var(--accent-dark));
+      color:#090909;
+      font-size:30px;font-weight:900;
+      box-shadow:0 0 35px rgba(255,43,43,.18);
+    }
+    .hero-side h2{margin:20px 0 4px;font-size:25px}
+    .role{color:var(--accent);font-weight:700}
+    .quick-info{margin-top:22px;display:grid;gap:10px}
+    .quick-info div{
+      padding:11px 13px;
+      border:1px solid var(--border);
+      border-radius:11px;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    /* SECTIONS */
+    section{padding:90px 0}
+    .section-head{margin-bottom:30px}
+    .section-head .eyebrow{margin-bottom:7px}
+    h2.section-title{font-size:clamp(30px,5vw,46px);margin:0;letter-spacing:-.035em}
+    .section-desc{color:var(--muted);max-width:720px}
+
+    .about-grid,.education-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:22px}
+    .card{padding:28px}
+    .card h3{margin-top:0}
+    .muted{color:var(--muted)}
+
+    /* SKILLS */
+    .skill-groups{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+    .skill-group h3{font-size:16px;margin-bottom:12px}
+    .tags{display:flex;flex-wrap:wrap;gap:9px}
+    .tag{
+      padding:8px 11px;
+      border-radius:999px;
+      background:rgba(255,43,43,.07);
+      border:1px solid rgba(255,43,43,.18);
+      color:#eee;
+      font-size:13px;
+    }
+
+    /* PROJECTS */
+    .projects{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+    .project{
+      position:relative;
+      overflow:hidden;
+      min-height:290px;
+    }
+    .project::before{
+      content:"";
+      position:absolute;
+      inset:0 0 auto;
+      height:3px;
+      background:linear-gradient(90deg,var(--accent),transparent);
+    }
+    .project-number{color:var(--accent);font-weight:900;font-size:13px}
+    .project h3{font-size:23px;margin:14px 0 10px}
+    .project p{color:var(--muted)}
+    .tech-stack{display:flex;flex-wrap:wrap;gap:7px;margin-top:20px}
+    .tech{
+      font-size:11px;
+      padding:6px 8px;
+      border:1px solid var(--border);
+      border-radius:7px;
+      color:#ddd;
+    }
+
+    /* EDUCATION + CERTS */
+    .timeline{display:grid;gap:18px}
+    .timeline-item{border-left:2px solid rgba(255,43,43,.35);padding-left:18px}
+    .timeline-item strong{display:block}
+    .date{color:var(--accent);font-size:12px;font-weight:800}
+
+    .certs{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+    .cert h3{margin-bottom:5px}
+    .cert .issuer{color:var(--accent);font-size:13px;font-weight:750}
+
+    /* CONTACT */
+    .contact{
+      text-align:center;
+      padding:55px 25px;
+    }
+    .contact p{color:var(--muted);max-width:620px;margin:12px auto 24px}
+    .contact-links{display:flex;justify-content:center;flex-wrap:wrap;gap:10px}
+
+    footer{
+      padding:30px 0 55px;
+      text-align:center;
+      color:#777;
+      font-size:13px;
+    }
+
+    @media(max-width:850px){
+      .hero-grid,.about-grid,.education-grid,.projects,.certs,.skill-groups{
+        grid-template-columns:1fr;
+      }
+      .hero-main{padding:34px 25px}
+      .hero-side{min-height:320px}
+      .nav-links{display:none}
+      header.hero{padding-top:110px}
+    }
+
+    @media(prefers-reduced-motion:no-preference){
+      .reveal{
+        animation:rise .7s ease both;
+      }
+      @keyframes rise{
+        from{opacity:0;transform:translateY(18px)}
+        to{opacity:1;transform:none}
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a class="brand" href="#home">
+      <span class="brand-mark">NS</span>
+      <span>Namaji Subhan<small>Java Developer</small></span>
+    </a>
+
+    <div class="nav-links">
+      <a href="#about">About</a>
+      <a href="#skills">Skills</a>
+      <a href="#projects">Projects</a>
+      <a href="#education">Education</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </nav>
+
+  <header class="hero" id="home">
+    <div class="container hero-grid">
+      <div class="hero-main reveal">
+        <div class="eyebrow">Computer Science Graduate</div>
+        <h1>Building with <span>Java</span>, Spring Boot & SQL.</h1>
+        <p>
+          Computer Science graduate with hands-on experience in Java, SQL and
+          object-oriented programming. I build practical applications using
+          CRUD, multithreading, JDBC, Spring Boot and MySQL, with a focus on
+          clean and maintainable code.
+        </p>
+
+        <div class="actions">
+          <a class="btn primary" href="#projects">View Projects</a>
+          <a class="btn" href="mailto:subhannamaji@gmail.com">Contact Me</a>
+          <a class="btn" href="subhansResume.pdf" target="_blank">View Resume</a>
+        </div>
+      </div>
+
+      <aside class="hero-side reveal">
+        <div>
+          <div class="avatar">NS</div>
+          <h2>Namaji Subhan</h2>
+          <div class="role">Java Developer</div>
+        </div>
+
+        <div class="quick-info">
+          <div>📍 Bengaluru, India</div>
+          <div>🎓 B.Tech CSE · 2021–2025</div>
+          <div>☕ Java · Spring Boot · MySQL</div>
+          <div>🧩 OOP · Multithreading · Collections</div>
+        </div>
+      </aside>
+    </div>
+  </header>
+
+  <main>
+
+    <section id="about">
+      <div class="container">
+        <div class="section-head">
+          <div class="eyebrow">01 · About</div>
+          <h2 class="section-title">A Java-focused developer in progress.</h2>
+        </div>
+
+        <div class="about-grid">
+          <article class="card">
+            <h3>Profile</h3>
+            <p class="muted">
+              I am a Computer Science graduate with practical experience in
+              Java, SQL and object-oriented programming. My projects include
+              CRUD-based applications and real-time chat systems, where I have
+              worked with concepts such as multithreading and JDBC for
+              structured data handling.
+            </p>
+            <p class="muted">
+              I am familiar with Spring Boot and MySQL for backend development
+              and interested in contributing to scalable enterprise
+              applications while continuing to strengthen my development skills.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3>What I work with</h3>
+            <div class="tags">
+              <span class="tag">Java</span>
+              <span class="tag">OOP</span>
+              <span class="tag">Multithreading</span>
+              <span class="tag">Collections</span>
+              <span class="tag">Spring Boot</span>
+              <span class="tag">SQL / MySQL</span>
+              <span class="tag">JavaScript</span>
+              <span class="tag">HTML</span>
+              <span class="tag">CSS</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="skills">
+      <div class="container">
+        <div class="section-head">
+          <div class="eyebrow">02 · Technical Skills</div>
+          <h2 class="section-title">My toolkit.</h2>
+          <p class="section-desc">
+            Technologies and concepts listed directly from my current resume.
+            No artificial proficiency percentages.
+          </p>
+        </div>
+
+        <div class="skill-groups">
+          <article class="card skill-group">
+            <h3>Core Java</h3>
+            <div class="tags">
+              <span class="tag">Java</span>
+              <span class="tag">OOP</span>
+              <span class="tag">Multithreading</span>
+              <span class="tag">Collections Framework</span>
+            </div>
+          </article>
+
+          <article class="card skill-group">
+            <h3>Backend</h3>
+            <div class="tags">
+              <span class="tag">Spring Boot</span>
+              <span class="tag">JDBC</span>
+              <span class="tag">REST APIs</span>
+            </div>
+          </article>
+
+          <article class="card skill-group">
+            <h3>Web Technologies</h3>
+            <div class="tags">
+              <span class="tag">HTML</span>
+              <span class="tag">CSS</span>
+              <span class="tag">JavaScript</span>
+            </div>
+          </article>
+
+          <article class="card skill-group">
+            <h3>Database & Tools</h3>
+            <div class="tags">
+              <span class="tag">SQL</span>
+              <span class="tag">MySQL</span>
+              <span class="tag">Eclipse</span>
+              <span class="tag">VS Code</span>
+              <span class="tag">Jupyter Notebook</span>
+            </div>
+          </article>
+
+          <article class="card skill-group">
+            <h3>Programming Languages</h3>
+            <div class="tags">
+              <span class="tag">Java</span>
+              <span class="tag">Python · Basics</span>
+              <span class="tag">JavaScript</span>
+            </div>
+          </article>
+
+          <article class="card skill-group">
+            <h3>Development Focus</h3>
+            <div class="tags">
+              <span class="tag">CRUD Applications</span>
+              <span class="tag">Authentication</span>
+              <span class="tag">Database Integration</span>
+              <span class="tag">Full-Stack Development</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="projects">
+      <div class="container">
+        <div class="section-head">
+          <div class="eyebrow">03 · Projects</div>
+          <h2 class="section-title">Projects that show how I build.</h2>
+          <p class="section-desc">
+            Project descriptions are aligned with the projects and technologies
+            documented in my resume.
+          </p>
+        </div>
+
+        <div class="projects">
+          <article class="card project">
+            <div class="project-number">PROJECT 01</div>
+            <h3>Employee Management System</h3>
+            <p>
+              Full-stack employee management application built with Spring Boot
+              and React. Includes CRUD operations, role-based authentication,
+              REST APIs, MySQL integration and a responsive HR dashboard.
+            </p>
+            <div class="tech-stack">
+              <span class="tech">Java</span>
+              <span class="tech">Spring Boot</span>
+              <span class="tech">React</span>
+              <span class="tech">REST API</span>
+              <span class="tech">MySQL</span>
+            </div>
+          </article>
+
+          <article class="card project">
+            <div class="project-number">PROJECT 02</div>
+            <h3>E-Commerce Platform</h3>
+            <p>
+              Java and Spring Boot e-commerce application featuring a product
+              catalog, shopping cart and order management. Implemented JWT
+              authentication, a simulated payment gateway and modular
+              microservices-oriented design principles.
+            </p>
+            <div class="tech-stack">
+              <span class="tech">Java</span>
+              <span class="tech">Spring Boot</span>
+              <span class="tech">JWT</span>
+              <span class="tech">SQL</span>
+              <span class="tech">Microservices Principles</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="education">
+      <div class="container">
+        <div class="section-head">
+          <div class="eyebrow">04 · Education & Certifications</div>
+          <h2 class="section-title">Education that built the foundation.</h2>
+        </div>
+
+        <div class="education-grid">
+          <article class="card">
+            <h3>Education</h3>
+            <div class="timeline">
+              <div class="timeline-item">
+                <span class="date">2021 – 2025</span>
+                <strong>Bachelor of Technology in Computer Science & Engineering</strong>
+                <span class="muted">Gates Institute of Technology, Gooty</span>
+                <span class="muted">Percentage: 70%</span>
+              </div>
+
+              <div class="timeline-item">
+                <span class="date">2019 – 2021</span>
+                <strong>Intermediate · MPC</strong>
+                <span class="muted">SSGS Junior Aided College, Guntakal</span>
+                <span class="muted">Percentage: 61%</span>
+              </div>
+
+              <div class="timeline-item">
+                <span class="date">2018 – 2019</span>
+                <strong>SSC · Class X</strong>
+                <span class="muted">Dr. Rajendra Prasad MPL School</span>
+                <span class="muted">Percentage: 83%</span>
+              </div>
+            </div>
+          </article>
+
+          <div class="certs">
+            <article class="card cert">
+              <span class="issuer">NPTEL · 07/2024 – 09/2024</span>
+              <h3>Cloud Computing</h3>
+              <p class="muted">
+                12-week certification covering IaaS, PaaS, SaaS, virtualization,
+                scalability and cloud security. Score: 78%.
+              </p>
+            </article>
+
+            <article class="card cert">
+              <span class="issuer">JSpiders · 09/2025 – 03/2026</span>
+              <h3>Java Full Stack Development</h3>
+              <p class="muted">
+                Training in Core Java, Advanced Java, JSP, Servlets, HTML, CSS,
+                JavaScript, SQL and database integration.
+              </p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="container">
+        <article class="card contact">
+          <div class="eyebrow">05 · Contact</div>
+          <h2 class="section-title">Let's connect.</h2>
+          <p>
+            Interested in Java, backend development or entry-level software
+            development opportunities? Feel free to reach out.
+          </p>
+
+          <div class="contact-links">
+            <a class="btn primary" href="mailto:subhannamaji@gmail.com">Email Me</a>
+            <a class="btn" href="https://www.linkedin.com/in/namaji-subhan-497980227/" target="_blank" rel="noopener">LinkedIn</a>
+            <a class="btn" href="https://github.com/subha2002666" target="_blank" rel="noopener">GitHub</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="container">
+      © <span id="year"></span> Namaji Subhan · Java Developer
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    const observer = new IntersectionObserver(
+      entries => entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add("reveal");
+      }),
+      { threshold: 0.12 }
+    );
+
+    document.querySelectorAll(".card, .section-head").forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
